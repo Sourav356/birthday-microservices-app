@@ -24,14 +24,17 @@ pool.connect()
   .then(() => console.log("✅ Connected to celebrationdb"))
   .catch(err => console.error("❌ DB connection error:", err));
 
-// Get today’s photos
+// Get all celebration photos
 app.get('/celebration', async (req, res) => {
-  const today = new Date().toISOString().split('T')[0];
-  const result = await pool.query(
-    'SELECT * FROM photos WHERE celebration_date=$1',
-    [today]
-  );
-  res.json(result.rows);
+  try {
+    const result = await pool.query(
+      'SELECT * FROM photos ORDER BY id DESC'
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error fetching photos:", err);
+    res.status(500).json({ error: "Failed to fetch photos" });
+  }
 });
 
 app.listen(3004, () => console.log('Celebration Service running on 3004'));
