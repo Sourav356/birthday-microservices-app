@@ -1,0 +1,65 @@
+# -----------------------------
+# Node modules
+# -----------------------------
+node_modules/
+
+# -----------------------------
+# Environment variables
+# -----------------------------
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# -----------------------------
+# Logs
+# -----------------------------
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# -----------------------------
+# Build folders
+# -----------------------------
+dist/
+build/
+coverage/
+
+# -----------------------------
+# Dependency directories
+# -----------------------------
+jspm_packages/
+
+# -----------------------------
+# Vite cache
+# -----------------------------
+.vite
+
+# -----------------------------
+# OS generated files
+# -----------------------------
+.DS_Store
+Thumbs.db
+
+# -----------------------------
+# IDE / Editor files
+# -----------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# -----------------------------
+# Docker (optional future use)
+# -----------------------------
+
+
+# -----------------------------
+# Misc
+# -----------------------------
+*.pid
+*.seed
+*.pid.lock

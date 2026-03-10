@@ -1,0 +1,106 @@
+.cake-container {
+  perspective: 1000px;
+}
+.cake-3d {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  transform-style: preserve-3d;
+  animation: rotateCake 10s infinite linear;
+}
+@keyframes rotateCake {
+  0% { transform: rotateY(0deg) rotateX(15deg); }
+  100% { transform: rotateY(360deg) rotateX(15deg); }
+}
+.tier {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at top, #ffb6c1, #ff69b4);
+  box-shadow: 
+    inset 0 -10px 20px rgba(0,0,0,0.2),
+    0 10px 10px rgba(0,0,0,0.2);
+}
+.tier-bottom {
+  bottom: 0px;
+  width: 200px;
+  height: 80px;
+  z-index: 1;
+}
+.tier-bottom::before {
+  content: "";
+  position: absolute;
+  top: 40px;
+  left: 0;
+  width: 200px;
+  height: 60px;
+  background: #ff69b4;
+  border-radius: 0 0 50% 50%;
+}
+.tier-middle {
+  bottom: 50px;
+  width: 150px;
+  height: 60px;
+  z-index: 2;
+  background: radial-gradient(circle at top, #ffe4e1, #ffb6c1);
+}
+.tier-middle::before {
+  content: "";
+  position: absolute;
+  top: 30px;
+  left: 0;
+  width: 150px;
+  height: 50px;
+  background: #ffb6c1;
+  border-radius: 0 0 50% 50%;
+}
+.tier-top {
+  bottom: 90px;
+  width: 100px;
+  height: 40px;
+  z-index: 3;
+  background: radial-gradient(circle at top, #fff0f5, #ffe4e1);
+}
+.tier-top::before {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 0;
+  width: 100px;
+  height: 40px;
+  background: #ffe4e1;
+  border-radius: 0 0 50% 50%;
+}
+.candle {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 40px;
+  background: repeating-linear-gradient(
+    45deg,
+    #ffffff,
+    #ffffff 5px,
+    #ff0000 5px,
+    #ff0000 10px
+  );
+  border-radius: 5px;
+}
+.flame {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 20px;
+  background-color: #ffcc00;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  box-shadow: 0 0 20px #ffcc00, 0 0 40px #ff6600, 0 0 60px #ff0000;
+  animation: flicker 0.1s infinite alternate;
+}
+@keyframes flicker {
+  0% { transform: translateX(-50%) scale(1) rotate(-1deg); opacity: 0.9; }
+  100% { transform: translateX(-50%) scale(1.1) rotate(2deg); opacity: 1; }
+}
