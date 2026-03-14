@@ -1,5 +1,5 @@
 # Using official Node.js Alpine image
-FROM node:24-alpine as builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 

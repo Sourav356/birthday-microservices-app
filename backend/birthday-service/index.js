@@ -6,12 +6,12 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174']
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:8080']
 }));
 
 app.get('/today', async (req, res) => {
   try {
-    const users = await axios.get('http://localhost:3001/users');
+    const users = await axios.get('http://host.docker.internal:3001/users');
 
     // Get today's date in local timezone (IST)
     const today = new Date().toLocaleDateString('en-CA'); // "YYYY-MM-DD"

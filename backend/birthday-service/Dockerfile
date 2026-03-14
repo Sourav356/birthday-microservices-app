@@ -1,5 +1,5 @@
 # Using official Node.js Alpine image
-FROM node:24-alpine as builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install production dependencies
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 #Runtime stage
 FROM node:24-alpine AS runtime
