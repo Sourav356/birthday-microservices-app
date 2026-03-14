@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:8080']
+  origin: ['http://localhost:8080']
 }));
 
 // Connect to userdb
@@ -41,9 +41,9 @@ app.post('/users', async (req, res) => {
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
     if (dob === today) {
       try {
-        await axios.post('http://host.docker.internal:3003/notify', {
+        await axios.post(`${process.env.NOTIFICATION_SERVICE_URL || 'http://host.docker.internal:3003'}/notify`, {
           email: newUser.email,
-          link: 'http://host.docker.internal:8080/celebration' // ✅ link to celebration page
+          link: 'http://localhost:8080/celebration' // ✅ link to celebration page
         });
         console.log(`Immediate notification sent to ${newUser.email}`);
       } catch (notifyErr) {

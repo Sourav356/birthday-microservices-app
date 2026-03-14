@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: birthday-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Sourav@26
+      POSTGRES_DB: userdb
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - birthday-network
+
+  user-service:
+    build: ./backend/user-service
+    image: souravdevopsdev/birthday-backend-userservice-micro:0.0.2
+    container_name: user-service
+    ports:
+      - "3001:3001"
+    env_file: ./backend/user-service/.env
+    environment:
+      - DB_HOST=db
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3003
+    depends_on:
+      - db
+    networks:
+      - birthday-network
+
+  birthday-service:
+    build: ./backend/birthday-service
+    image: souravdevopsdev/birthday-backend-birthdayservice-micro:0.0.2
+    container_name: birthday-service
+    ports:
+      - "3002:3002"
+    env_file: ./backend/birthday-service/.env
+    environment:
+      - USER_SERVICE_URL=http://user-service:3001
+    depends_on:
+      - user-service
+    networks:
+      - birthday-network
+
+  notification-service:
+    build: ./backend/notification-service
+    image: souravdevopsdev/birthday-backend-notificationservice-micro:0.0.2
+    container_name: notification-service
+    ports:
+      - "3003:3003"
+    env_file: ./backend/notification-service/.env
+    environment:
+      - BIRTHDAY_SERVICE_URL=http://birthday-service:3002
+    depends_on:
+      - birthday-service
+    networks:
+      - birthday-network
+
+  celebration-service:
+    build: ./backend/celebration-service
+    image: souravdevopsdev/birthday-backend-celebrationservice-micro:0.0.2
+    container_name: celebration-service
+    ports:
+      - "3004:3004"
+    env_file: ./backend/celebration-service/.env
+    environment:
+      - DB_HOST=db
+    depends_on:
+      - db
+    networks:
+      - birthday-network
+
+  frontend:
+    build: ./frontend/frontend
+    image: souravdevopsdev/birthday-frontend-micro:0.0.2
+    container_name: birthday-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - user-service
+      - birthday-service
+      - celebration-service
+    networks:
+      - birthday-network
+
+networks:
+  birthday-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

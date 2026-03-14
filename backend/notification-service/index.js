@@ -9,7 +9,7 @@ const axios = require('axios');
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:8080'] }));
+app.use(cors({ origin: ['http://localhost:8080'] }));
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -39,7 +39,7 @@ app.post('/notify', async (req, res) => {
 cron.schedule('0 0 * * *', async () => {
   console.log("Running midnight birthday check...");
   try {
-    const res = await axios.get('http://host.docker.internal:3002/today'); // call birthday-service
+    const res = await axios.get(`${process.env.BIRTHDAY_SERVICE_URL || 'http://host.docker.internal:3002'}/today`); // call birthday-service
     const birthdays = res.data;
 
     for (const user of birthdays) {
@@ -47,7 +47,7 @@ cron.schedule('0 0 * * *', async () => {
         from: process.env.EMAIL,
         to: user.email, // ✅ send to each user’s email from DB
         subject: '🎉 Happy Birthday!',
-        html: `<h1>Happy Birthday!</h1><p>Click <a href="http://host.docker.internal:8080/celebration">here</a> to see your surprise 🎂</p>`
+        html: `<h1>Happy Birthday!</h1><p>Click <a href="http://localhost:8080/celebration">here</a> to see your surprise 🎂</p>`
       });
       console.log(`Notification sent to ${user.email}`);
     }

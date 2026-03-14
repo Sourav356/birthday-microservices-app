@@ -14,7 +14,7 @@ export default function BirthdayList() {
         res.data.forEach(user => {
           axios.post('http://localhost:3003/notify', {
             email: user.email,
-            link: 'http://localhost:5173/celebration'
+            link: 'http://localhost:8080/celebration'
           })
           .catch(err => console.error("Error sending notification:", err));
         });
