@@ -1,0 +1,51 @@
+global:
+  image:
+    tag: "latest"
+  database:
+    host: "CHANGE_ME.rds.amazonaws.com" # Place your RDS endpoint from Terraform
+    port: 5432
+    user: "postgres"
+    name: "userdb"
+  s3:
+    bucket: "CHANGE_ME_S3_BUCKET" # Place your S3 bucket name from Terraform
+# Note: Update service repositories below with ECR URLs from Terraform output
+
+services:
+  user-service:
+    port: 3001
+    image:
+      repository: souravdevopsdev/birthday-user-service
+    needsDB: true
+    dbName: "userdb"
+    env:
+      NOTIFICATION_SERVICE_URL: "http://notification-service:3003"
+  
+  birthday-service:
+    port: 3002
+    image:
+      repository: souravdevopsdev/birthday-birthday-service
+    env:
+      USER_SERVICE_URL: "http://user-service:3001"
+      TZ: "Asia/Kolkata"
+
+  notification-service:
+    port: 3003
+    image:
+      repository: souravdevopsdev/birthday-notification-service
+    env:
+      BIRTHDAY_SERVICE_URL: "http://birthday-service:3002"
+      EMAIL: "souravplacement01@gmail.com"
+      PASSWORD: "xsuolyrroqmrmzte" # Use Gmail App Password
+      TZ: "Asia/Kolkata"
+
+  celebration-service:
+    port: 3004
+    image:
+      repository: souravdevopsdev/birthday-celebration-service
+    needsDB: true
+    dbName: "celebrationdb"
+
+  frontend:
+    port: 80
+    image:
+      repository: souravdevopsdev/birthday-frontend

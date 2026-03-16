@@ -70,8 +70,18 @@ function App() {
         <section>
           <Notes
             notes={[
-              "Cake cutting at 7 PM 🎂",
-              "Surprise gift reveal at 8 PM 🎁",
+              "Happy Birthday AMAR PUCCHHKKUU SONA! 🎉",
+              "Many Many Happy Returns of the Day! 🎂",
+              "Wishing you a day filled with love, laughter, and unforgettable memories! 🎈",
+              "May all your dreams come true in the year ahead! 🌟",
+              "Here's to another year of amazing adventures and cherished moments! 🥳",
+              "I am here always for you, from your every down to your every up as your partner! 🫂❤️",
+              "I am so grateful to have you in my life, and I look forward to celebrating many more birthdays together! 🎊",
+              "I am praying that next year we will be celebrating your birthday in a beautiful place together and cherish many more moments! 🌴",
+              "I am praying for your good health, happiness, and success in the coming years! 🙏",
+              "You are my everything and I am so so so thankful to GOD that HE brought you into my life! and make me the happiest person in the world!😁",
+              "I Loooooovvvvvveeeee Yooooooooouuuuuuuuuuuu ammmaaaarrr PUCCCCCHHHHKKKKUUUU SOOOOONNNNNAAAAAAA ❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️🫂🫂🫂🫂🫂🫂🫂🫂🫂🫂",
+              "Again Happy Birthday to My LOOOVVEEE ❤️❤️❤️🫂🫂🫂! My Wife 😘😘😘🫂🫂🫂!! My World 😍😍😍🫂🫂🫂🫂❤️❤️❤️🤗🤗🤗!!! My EVERYTHING❤️❤️❤️❤️🫂🫂🫂🫂!!!",
             ]}
           />
         </section>

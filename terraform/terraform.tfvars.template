@@ -1,0 +1,11 @@
+aws_region           = "ap-south-2"
+vpc_cidr             = "10.0.0.0/16"
+public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
+private_subnet_cidrs = ["10.0.3.0/24", "10.0.4.0/24"]
+availability_zones   = ["ap-south-2a", "ap-south-2b"]
+cluster_name         = "birthday-app-cluster"
+node_group_name      = "birthday-app-nodes"
+db_name              = "birthdaydb"
+db_user              = "postgres"
+db_password          = "your-secure-password" # CHANGE THIS
+bucket_name          = "birthday-app-celebration-photos-637043415174"
