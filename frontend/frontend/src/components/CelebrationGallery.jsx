@@ -8,7 +8,7 @@ export default function CelebrationGallery() {
 
   useEffect(() => {
     // Fetch photos for today from celebration-service
-    axios.get("http://localhost:3004/celebration")
+    axios.get("/api/celebration")
       .then(res => setPhotos(res.data))
       .catch(err => console.error("Error fetching photos:", err));
   }, []);

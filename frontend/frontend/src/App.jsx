@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 import Navbar from "./components/Navbar";
 import Aurora from "./components/Aurora";
@@ -14,14 +15,25 @@ import Notes from "./components/Notes";
 function App() {
 
   const [hasBirthday, setHasBirthday] = useState(false);
+  const [birthdays, setBirthdays] = useState([]); // Added birthdays state
 
   // detect if there are birthdays today
   useEffect(() => {
     const checkBirthday = async () => {
       try {
-        const res = await fetch("http://localhost:3002/today");
-        const data = await res.json();
-        if (data.length > 0) setHasBirthday(true);
+        const res = await axios.get('/api/today'); // Prefix with /api
+        setBirthdays(res.data); // Set birthdays state
+        if (res.data.length > 0) {
+          setHasBirthday(true);
+          // 🔔 Trigger notification for each birthday
+          res.data.forEach(user => {
+            axios.post('/api/notify', { // Prefix with /api
+              email: user.email,
+              link: window.location.origin + '/#celebration' // Redirect to anchor
+            })
+            .catch(err => console.error("Error sending notification:", err)); // Added error handling for post
+          });
+        }
       } catch (err) {
         console.error(err);
       }
@@ -63,7 +75,7 @@ function App() {
           <BirthdayList />
         </section>
 
-        <section>
+        <section id="celebration">
           <CelebrationGallery />
         </section>
 

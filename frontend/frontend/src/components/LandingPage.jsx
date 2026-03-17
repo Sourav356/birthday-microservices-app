@@ -17,7 +17,7 @@ export default function LandingPage() {
       >
 
         <h1 className="text-6xl md:text-8xl font-extrabold bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300 bg-clip-text text-transparent drop-shadow-xl pb-4">
-          Happy Birthday PUCCHHKKUU SONA 🎉
+          Happy Birthday PUCHKKUU SONA 🎉
         </h1>
 
         <p className="mt-6 text-2xl text-white font-medium drop-shadow-md">

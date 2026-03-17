@@ -2,28 +2,30 @@ global:
   image:
     tag: "latest"
   database:
-    host: "CHANGE_ME.rds.amazonaws.com" # Place your RDS endpoint from Terraform
+    host: "birthday-app-db.cl6a484mm0ld.ap-south-2.rds.amazonaws.com" # Place your RDS endpoint from Terraform
     port: 5432
     user: "postgres"
     name: "userdb"
+    password: "Sourav2001" # Added from your terraform.tfvars
   s3:
-    bucket: "CHANGE_ME_S3_BUCKET" # Place your S3 bucket name from Terraform
+    bucket: "birthday-app-celebration-photos-637043415174" # Place your S3 bucket name from Terraform
 # Note: Update service repositories below with ECR URLs from Terraform output
 
 services:
   user-service:
     port: 3001
     image:
-      repository: souravdevopsdev/birthday-user-service
+      repository: 637043415174.dkr.ecr.ap-south-2.amazonaws.com/birthday-user-service
     needsDB: true
     dbName: "userdb"
     env:
       NOTIFICATION_SERVICE_URL: "http://notification-service:3003"
+      FRONTEND_URL: "http://a4c6c25ba44cf4ec98b1809dbcdc1f7b-604775912.ap-south-2.elb.amazonaws.com"
   
   birthday-service:
     port: 3002
     image:
-      repository: souravdevopsdev/birthday-birthday-service
+      repository: 637043415174.dkr.ecr.ap-south-2.amazonaws.com/birthday-birthday-service
     env:
       USER_SERVICE_URL: "http://user-service:3001"
       TZ: "Asia/Kolkata"
@@ -31,21 +33,22 @@ services:
   notification-service:
     port: 3003
     image:
-      repository: souravdevopsdev/birthday-notification-service
+      repository: 637043415174.dkr.ecr.ap-south-2.amazonaws.com/birthday-notification-service
     env:
       BIRTHDAY_SERVICE_URL: "http://birthday-service:3002"
       EMAIL: "souravplacement01@gmail.com"
       PASSWORD: "xsuolyrroqmrmzte" # Use Gmail App Password
       TZ: "Asia/Kolkata"
+      FRONTEND_URL: "http://a4c6c25ba44cf4ec98b1809dbcdc1f7b-604775912.ap-south-2.elb.amazonaws.com"
 
   celebration-service:
     port: 3004
     image:
-      repository: souravdevopsdev/birthday-celebration-service
+      repository: 637043415174.dkr.ecr.ap-south-2.amazonaws.com/birthday-celebration-service
     needsDB: true
     dbName: "celebrationdb"
 
   frontend:
     port: 80
     image:
-      repository: souravdevopsdev/birthday-frontend
+      repository: 637043415174.dkr.ecr.ap-south-2.amazonaws.com/birthday-frontend

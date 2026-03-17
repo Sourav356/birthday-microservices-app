@@ -6,15 +6,15 @@ export default function BirthdayList() {
   const [birthdays, setBirthdays] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:3002/today')
+    axios.get('/api/today') // Prefix with /api
       .then(res => {
         setBirthdays(res.data);
 
         // 🔔 Trigger notification for each birthday
         res.data.forEach(user => {
-          axios.post('http://localhost:3003/notify', {
+          axios.post('/api/notify', { // Prefix with /api
             email: user.email,
-            link: 'http://localhost:8080/celebration'
+            link: '/#celebration'
           })
           .catch(err => console.error("Error sending notification:", err));
         });

@@ -5,21 +5,19 @@ const axios = require('axios');
 const cors = require('cors');
 const app = express();
 
-app.use(cors({
-  origin: ['http://localhost:8080']
-}));
+app.use(cors()); // Allow all for production ingress
 
-app.get('/today', async (req, res) => {
+app.get('/api/today', async (req, res) => {
   try {
-    const users = await axios.get(`${process.env.USER_SERVICE_URL || 'http://host.docker.internal:3001'}/users`);
+    const users = await axios.get('http://user-service:3001/api/users');
 
-    // Get today's date in local timezone (IST)
-    const today = new Date().toLocaleDateString('en-CA'); // "YYYY-MM-DD"
+    // Get today's date in IST
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
 
     const birthdays = users.data.filter(u => {
-      // Convert DOB to local date string
-      const dobDate = new Date(u.dob).toLocaleDateString('en-CA');
-      return dobDate === today;
+      // DOB from PG is usually a Date object; format it to YYYY-MM-DD in IST
+      const dobDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date(u.dob));
+      return dobDate.slice(5) === today.slice(5); // Match Month-Day for birthdays
     });
 
     res.json(birthdays);

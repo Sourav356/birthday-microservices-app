@@ -9,9 +9,7 @@ const axios = require('axios');   // ✅ added to trigger notification service
 const app = express();
 app.use(express.json());
 
-app.use(cors({
-  origin: ['http://localhost:8080']
-}));
+app.use(cors()); // Allow all for production ingress
 
 // Connect to userdb
 const pool = new Pool({
@@ -20,6 +18,7 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
+  ssl: { rejectUnauthorized: false }
 });
 
 pool.connect()
@@ -27,7 +26,7 @@ pool.connect()
   .catch(err => console.error("❌ DB connection error:", err));
 
 // Create user
-app.post('/users', async (req, res) => {
+app.post('/api/users', async (req, res) => {
   const { name, email, dob } = req.body;
 
   try {
@@ -37,13 +36,15 @@ app.post('/users', async (req, res) => {
     );
     const newUser = result.rows[0];
 
-    // 🔔 Auto-trigger notification if birthday is today
-    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-    if (dob === today) {
+    // 🔔 Auto-trigger notification if birthday is today (IST)
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
+    const dobMonthDay = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date(dob)).slice(5);
+    
+    if (dobMonthDay === today.slice(5)) {
       try {
-        await axios.post(`${process.env.NOTIFICATION_SERVICE_URL || 'http://host.docker.internal:3003'}/notify`, {
+        await axios.post('http://notification-service:3003/api/notify', {
           email: newUser.email,
-          link: 'http://localhost:8080/celebration' // ✅ link to celebration page
+          link: `${process.env.FRONTEND_URL || 'http://a4c6c25ba44cf4ec98b1809dbcdc1f7b-604775912.ap-south-2.elb.amazonaws.com'}/#celebration`
         });
         console.log(`Immediate notification sent to ${newUser.email}`);
       } catch (notifyErr) {
@@ -59,13 +60,13 @@ app.post('/users', async (req, res) => {
 });
 
 // Get all users
-app.get('/users', async (req, res) => {
+app.get('/api/users', async (req, res) => {
   const result = await pool.query('SELECT * FROM users');
   res.json(result.rows);
 });
 
 // Get user by ID
-app.get('/users/:id', async (req, res) => {
+app.get('/api/users/:id', async (req, res) => {
   const result = await pool.query('SELECT * FROM users WHERE id=$1', [req.params.id]);
   res.json(result.rows[0]);
 });

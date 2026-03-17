@@ -53,7 +53,7 @@ export default function AudioPlayer() {
         ref={audioRef} 
         unselectable="on"
         loop 
-        src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Happy_Birthday_to_You_%28instrumental%29.ogg" 
+        src="https://birthday-app-celebration-photos-637043415174.s3.ap-south-2.amazonaws.com/bd_audio.mp3" 
       />
     </motion.div>
   );

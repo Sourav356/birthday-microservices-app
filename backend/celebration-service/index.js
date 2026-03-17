@@ -6,9 +6,7 @@ const { Pool } = require('pg');
 const app = express();
 app.use(express.json());
 
-app.use(cors({
-  origin: ['http://localhost:8080']
-}));
+app.use(cors()); // Allow all for production ingress
 
 // Connect to celebrationdb
 const pool = new Pool({
@@ -17,6 +15,7 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
+  ssl: { rejectUnauthorized: false }
 });
 
 
@@ -25,7 +24,7 @@ pool.connect()
   .catch(err => console.error("❌ DB connection error:", err));
 
 // Get all celebration photos
-app.get('/celebration', async (req, res) => {
+app.get('/api/celebration', async (req, res) => {
   try {
     const result = await pool.query(
       'SELECT * FROM photos ORDER BY id DESC'

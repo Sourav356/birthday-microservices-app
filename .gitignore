@@ -1,16 +1,34 @@
 # -----------------------------
+# Terraform
+# -----------------------------
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+_override.tf
+_override.tf.json
+.terraformrc
+terraform.rc
+
+# -----------------------------
 # Node modules
 # -----------------------------
 node_modules/
+**/node_modules/
 
 # -----------------------------
-# Environment variables
+# Environment variables / Secrets
 # -----------------------------
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
+*.pem
+*.key
 
 # -----------------------------
 # Logs
@@ -26,22 +44,19 @@ yarn-error.log*
 # -----------------------------
 dist/
 build/
+**/dist/
+**/build/
 coverage/
-
-# -----------------------------
-# Dependency directories
-# -----------------------------
-jspm_packages/
-
-# -----------------------------
-# Vite cache
-# -----------------------------
-.vite
 
 # -----------------------------
 # OS generated files
 # -----------------------------
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
 # -----------------------------
@@ -51,11 +66,8 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
-
-# -----------------------------
-# Docker (optional future use)
-# -----------------------------
-
+*.sublime-project
+*.sublime-workspace
 
 # -----------------------------
 # Misc
@@ -63,3 +75,6 @@ Thumbs.db
 *.pid
 *.seed
 *.pid.lock
+.pnpm-debug.log*
+.npm/
+.yarn/

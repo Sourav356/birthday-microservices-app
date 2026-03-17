@@ -1,109 +1,101 @@
 # Birthday Microservices Application 🎂
 
-A modern, Dockerized microservices application for managing and celebrating birthdays. Featuring a high-performance React frontend with glassmorphism UI, fireworks animations, and automated email notifications.
+A modern, cloud-native microservices application for managing and celebrating birthdays. Featuring a high-performance React frontend with glassmorphism UI, fireworks animations, and automated email notifications.
 
 ## 🏗️ Architecture Diagram
 
 ```mermaid
 graph TD
     User((User Browser))
+    Ingress[AWS Ingress Controller]
     
     subgraph Frontend_Layer
-        FE[Frontend - React/Nginx Port: 8080]
+        FE[Frontend - React/Nginx]
     end
 
-    subgraph Backend_Microservices
-        US[User Service Port: 3001]
-        BS[Birthday Service Port: 3002]
-        NS[Notification Service Port: 3003]
-        CS[Celebration Service Port: 3004]
+    subgraph Backend_API_Layer_Prefix_api
+        US[User Service :3001]
+        BS[Birthday Service :3002]
+        NS[Notification Service :3003]
+        CS[Celebration Service :3004]
+    end
+
+    subgraph cloud_storage
+        S3[(S3 Photos Bucket)]
     end
 
     subgraph Databases
-        UDB[(User DB - Postgres)]
-        CDB[(Celebration DB - Postgres)]
+        RDS[(AWS RDS Postgres)]
     end
 
-    User --> FE
-    FE --> US
-    FE --> BS
-    FE --> CS
-
-    US --> UDB
+    User --> Ingress
+    Ingress -- "/" --> FE
+    Ingress -- "/api/*" --> Backend_API_Layer_Prefix_api
+    
+    FE -- "Fetch /api/today" --> BS
+    FE -- "Fetch /api/celebration" --> CS
+    
+    US --> RDS
     BS --> US
-    US -- "Immediate Notify" --> NS
-    NS -- "Daily Check" --> BS
-    CS --> CDB
+    US -- "Trigger" --> NS
+    NS -- "Midnight Cron" --> BS
+    CS --> RDS
+    CS -- "Serve" --> S3
     NS --> SMTP((Gmail SMTP))
 ```
 
 ## 🚀 Services Overview
 
-| Service | Port | Responsibility |
-| :--- | :--- | :--- |
-| **Frontend** | 8080 | React SPA with Aurora backgrounds and Fireworks. |
-| **User Service** | 3001 | Manages user registration and profiles in PostgreSQL. |
-| **Birthday Service** | 3002 | Filters and identifies users with birthdays today. |
-| **Notification Service** | 3003 | Sends emails via Nodemailer and runs daily cron jobs. |
-| **Celebration Service** | 3004 | Manages and serves celebration gallery photos. |
+| Service | Port | Path Prefix | Responsibility |
+| :--- | :--- | :--- | :--- |
+| **Frontend** | 80 | `/` | React UI with Glassmorphism, Fireworks, and Audio. |
+| **User Service** | 3001 | `/api/users` | Manages registration and profiles in RDS. |
+| **Birthday Service** | 3002 | `/api/today` | Identifies whose birthday it is today. |
+| **Notification Service** | 3003 | `/api/notify` | Sends automated birthday emails via SMTP. |
+| **Celebration Service** | 3004 | `/api/celebration` | Serves celebration gallery photos from S3. |
 
 ## 🛠️ Deployment Options
 
-We offer two ways to deploy the application: the modern **Docker Compose** approach (recommended) and the **Legacy Manual** approach.
+### 1. Cloud Deployment (AWS + Kubernetes) ☁️
+The production-ready approach using EKS, RDS, and S3.
 
-### 1. Modern Deployment (Recommended) 🚀
-The easiest way to run the entire stack (including the database) with automated networking:
+```powershell
+# 1. Update Helm Values with RDS/S3 details
+# 2. Rebuild and Push images to ECR
+# 3. Apply via Helm
+helm upgrade --install birthday-app ./k8s-helm/birthday-app -n default
+
+# 4. Restart to pick up latest ECR images
+kubectl rollout restart deployment frontend user-service notification-service birthday-service celebration-service
+```
+
+### 2. Local Development (Docker Compose) 🐳
+The easiest way to run the entire stack locally with automated networking:
 
 ```powershell
 # Start everything in one go
 docker-compose up -d --build
 ```
 
-*   **Database**: Automatically initialized with tables and dummy data via `init.sql`.
-*   **Networking**: Services communicate via a custom bridge network (`birthday-network`).
-*   **Access**: Main UI at `http://localhost:8080`.
-
-### 2. Manual Deployment (Legacy Version) 🏗️
-If you need to build and run services individually (requires a pre-existing host database):
-
-<details>
-<summary>Click to see Manual Docker Commands</summary>
-
-#### Build Images
-```powershell
-docker build -t birthday-user-service ./backend/user-service
-docker build -t birthday-birthday-service ./backend/birthday-service
-docker build -t birthday-notification-service ./backend/notification-service
-docker build -t birthday-celebration-service ./backend/celebration-service
-docker build -t birthday-frontend ./frontend/frontend
-```
-
-#### Run Containers
-```powershell
-docker run -d -p 3001:3001 --name user-service birthday-user-service
-docker run -d -p 3002:3002 --name birthday-service birthday-birthday-service
-docker run -d -p 3003:3003 --name notification-service birthday-notification-service
-docker run -d -p 3004:3004 --name celebration-service birthday-celebration-service
-docker run -d -p 8080:80 --name frontend birthday-frontend
-```
-</details>
-
 ---
 
-## 🗄️ Networking & Communication
+## 🗄️ Networking & Routing
 
-- **Internal Service Names**: Within the Docker network, services use names (`db`, `user-service`, `notification-service`) instead of IP addresses.
-- **Port Mapping**:
-    - **Frontend**: `8080` (Browser) -> `80` (Nginx)
-    - **Database**: `5433` (Host) -> `5432` (Container)
-- **CORS**: All APIs are configured to trust `http://localhost:8080`.
+- **Ingress Isolation**: All backend services are isolated behind the `/api/` prefix to prevent conflicts with Frontend SPA routing.
+- **Anchor Linking**: Email links use `/#celebration` to ensure the browser loads the UI before scrolling to the gallery.
+- **RDS Connectivity**: Backend services connect to AWS RDS using the `DB_HOST` environment variable provided via Helm.
+- **S3 Storage**: Photos are served directly from a public S3 bucket with the AP-SOUTH-2 region prefix.
 
 ---
 
 ## 🔐 Environment Variables
-Each service requires a `.env` file containing secrets like `EMAIL` and `PASSWORD`. These are automatically loaded by Docker Compose via the `env_file` property.
+Key configuration tokens are managed via Helm `values.yaml` and injected into pods:
+- `DB_HOST`, `DB_USER`, `DB_PASSWORD`: Database credentials.
+- `FRONTEND_URL`: Used for generating absolute links in emails.
+- `EMAIL`, `PASSWORD`: Gmail SMTP credentials for notifications.
 
 ## ✨ Key Technical Features
-- **SPA Routing**: Custom Nginx configuration handles sub-routes.
-- **Daily Cron Jobs**: `node-cron` checks for birthdays at midnight.
-- **Glassmorphism UI**: Beautiful, premium design using Tailwind CSS and Framer Motion.
+- **Regex-Free Routing**: Services listen directly on `/api` paths for maximum Ingress compatibility.
+- **Database Safeguards**: The `photos` table uses a `UNIQUE` constraint on `url` to prevent gallery duplicates.
+- **Glassmorphism UI**: Premium design using Framer Motion and modern CSS backdrop-filters.
+- **Intelligent Cron**: `node-cron` identifies birthdays precisely in the `Asia/Kolkata` timezone.
