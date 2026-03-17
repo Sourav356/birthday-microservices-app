@@ -6,7 +6,7 @@ global:
     port: 5432
     user: "postgres"
     name: "userdb"
-    password: "Sourav2001" # Added from your terraform.tfvars
+    password: "######" # Added from your terraform.tfvars
   s3:
     bucket: "birthday-app-celebration-photos-637043415174" # Place your S3 bucket name from Terraform
 # Note: Update service repositories below with ECR URLs from Terraform output
@@ -37,7 +37,7 @@ services:
     env:
       BIRTHDAY_SERVICE_URL: "http://birthday-service:3002"
       EMAIL: "souravplacement01@gmail.com"
-      PASSWORD: "xsuolyrroqmrmzte" # Use Gmail App Password
+      PASSWORD: "##########" # Use Gmail App Password
       TZ: "Asia/Kolkata"
       FRONTEND_URL: "http://a4c6c25ba44cf4ec98b1809dbcdc1f7b-604775912.ap-south-2.elb.amazonaws.com"
 
